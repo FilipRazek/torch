@@ -19,7 +19,7 @@ pub fn move_cursor(stdout: &mut Stdout, position: &Position) -> Result<(), Error
     Ok(())
 }
 
-pub fn clear_screen(stdout: &mut Stdout) -> Result<(), Error> {
+fn clear_screen(stdout: &mut Stdout) -> Result<(), Error> {
     write!(stdout, "{}", termion::clear::All)?;
     stdout.flush()?;
     Ok(())
@@ -55,4 +55,7 @@ pub fn get_raw_stdout() -> Result<RawTerminal<Stdout>, Error> {
     stdout().into_raw_mode()
 }
 
-
+pub fn get_terminal_middle() -> Result<(u16, u16), Error> {
+    let (x, y) = termion::terminal_size()?;
+    Ok((x / 2, y / 2))
+}
