@@ -1,5 +1,11 @@
+use std::io::stdin;
+use std::io::stdout;
 use std::io::Error;
 use std::io::{Stdout, Write};
+use termion::event::{Event, Key};
+use termion::input::TermRead;
+use termion::raw::IntoRawMode;
+use termion::raw::RawTerminal;
 
 use crate::position::Position;
 
@@ -29,3 +35,24 @@ pub fn draw_screen(stdout: &mut Stdout, lines: &Vec<&str>) -> Result<(), Error> 
     stdout.flush()?;
     Ok(())
 }
+
+pub fn handle_events(handler: &mut impl FnMut(char)) {
+    let stdin = stdin();
+    for c in stdin.events() {
+        if let Event::Key(key) = c.unwrap() {
+            match key {
+                Key::Ctrl('c') => break,
+                Key::Char(key) => {
+                    handler(key);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+pub fn get_raw_stdout() -> Result<RawTerminal<Stdout>, Error> {
+    stdout().into_raw_mode()
+}
+
+
